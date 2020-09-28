@@ -45,18 +45,26 @@ packages:
     path: pkg/cloud
     generators:
       - typegen
-    methods:
+      - nerdgraphclient
+    imports:
+      - "github.com/newrelic/newrelic-client-go/pkg/errors"
+    queries:
+      - path: ["actor", "cloud"]
+        endpoints:
+          - name: linkedAccounts
+            maxQueryFieldDepth: 1
+    mutations:
       - name: cloudConfigureIntegration
       - name: cloudDisableIntegration
       - name: cloudLinkAccount
       - name: cloudRenameAccount
       - name: cloudUnlinkAccount
-    types:
-      - name: CloudAwsGovCloudProvider
-      - name: CloudAwsProvider
-      - name: CloudBaseProvider
-      - name: CloudGcpProvider
-      - name: CloudProvider
+    types: []
+      # - name: CloudAwsGovCloudProvider
+      # - name: CloudAwsProvider
+      # - name: CloudBaseProvider
+      # - name: CloudGcpProvider
+      # - name: CloudProvider
   - name: edge
     path: pkg/edge
     generators:
@@ -173,3 +181,5 @@ packages:
 generators:
   - name: typegen
     fileName: "types.go"
+  - name: nerdgraphclient
+    fileName: "{{.PackageName}}_api.go"
