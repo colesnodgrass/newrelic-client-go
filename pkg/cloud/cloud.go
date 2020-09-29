@@ -31,21 +31,50 @@ func New(config config.Config) Cloud {
 	return pkg
 }
 func (r *CloudLinkedAccount) UnmarshalJSON(b []byte) error {
-	var objMap map[string]*json.RawMessage
-	err := json.Unmarshal(b, &objMap)
-	if err != nil {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(b, &raw); err != nil {
 		return err
 	}
 
-	fmt.Printf("cloudLinkedAccount: objMap: %+v\n", objMap)
+	r.CreatedAt = EpochSeconds(int(raw["createdAt"].(float64)))
+	r.UpdatedAt = EpochSeconds(int(raw["updatedAt"].(float64)))
+	r.AuthLabel = raw["authLabel"].(string)
+	r.ExternalId = raw["externalId"].(string)
+	r.ID = int(raw["id"].(float64))
+	r.Disabled = raw["disabled"].(bool)
+	r.Name = raw["name"].(string)
+	r.NrAccountId = int(raw["nrAccountId"].(float64))
+	// TODO: Provider
 
-	// var cloudLinkedAccount CloudLinkedAccount
-	// err = json.Unmarshal(b, &cloudLinkedAccount)
-	// if err != nil {
-	// 	fmt.Printf("err, cloudLinkedAccount: %+v\n", cloudLinkedAccount)
-	//
-	// 	return err
-	// }
+
+	rawIntegrations := raw["integrations"].([]interface{})
+	for _, ri := range rawIntegrations {
+		rawIntegration := ri.(map[string]interface{})
+		integrationType := rawIntegration["__typename"].(string)
+		switch integrationType {
+		case "CloudTrustedadvisorIntegration":
+			integration := &CloudTrustedadvisorIntegration{}
+
+			integration.CreatedAt = EpochSeconds(int(rawIntegration["createdAt"].(float64)))
+			integration.UpdatedAt = EpochSeconds(int(rawIntegration["updatedAt"].(float64)))
+			integration.Name = rawIntegration["name"].(string)
+			integration.NrAccountId = int(rawIntegration["nrAccountId"].(float64))
+
+			if rawIntegration["inventoryPollingInterval"] != nil {
+				integration.InventoryPollingInterval = int(rawIntegration["inventoryPollingInterval"].(float64))
+			}
+
+			if rawIntegration["metricsPollingInterval"] != nil {
+				integration.MetricsPollingInterval = int(rawIntegration["metricsPollingInterrval"].(float64))
+			}
+
+			// TODO: LinkedAccount
+
+			r.Integrations = append(r.Integrations, integration)
+		default:
+			//fmt.Printf("integration type %s not recognized", integrationType)
+		}
+	}
 
 	return nil
 }

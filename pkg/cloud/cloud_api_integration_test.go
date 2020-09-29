@@ -26,8 +26,13 @@ func TestCloud_RenameAccounts(t *testing.T) {
 	// t.Logf("response: %+v", response)
 
 	response, err := a.GetLinkedAccounts("aws")
+
 	require.NoError(t, err)
-	t.Logf("response: %+v", response)
+	//t.Logf("response: %+v", response)
+
+	t.Logf("type: %+v\n", (*response)[0])
+	t.Logf("type: %+v\n", (*response)[0].Integrations[0].(*CloudTrustedadvisorIntegration))
+
 
 }
 

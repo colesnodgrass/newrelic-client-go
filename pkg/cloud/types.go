@@ -3047,10 +3047,8 @@ type CloudLinkedAccount struct {
 	ExternalId string `json:"externalId"`
 	// The linked account identifier in NewRelic.
 	ID int `json:"id"`
-	// Get details of one cloud service integration.
-	Integration CloudIntegrationInterface `json:"integration"`
 	// Get details of all cloud service integrations.
-	Integrations CloudIntegrationInterface `json:"integrations"`
+	Integrations []CloudIntegrationInterface `json:"integrations"`
 	// The linked account name in NewRelic.
 	Name string `json:"name"`
 	// The New Relic account identifier.
